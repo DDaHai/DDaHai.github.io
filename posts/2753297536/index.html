@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            Hexo
+            OSPF（基础）
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,92 +32,170 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/index.css">
-<div id="count"></div>
-<div id="header" >
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-title">大海</h1>
-                <h2 class="header-description" id="hitokoto"></h2>
-                <h3 class="header-info" id="hitokotoAuthor"></h3>
+                <h1 class="header-subtitle">OSPF（基础）</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2024-03-06
+                        </span>
+                        
+                            
+                                <span id="/posts/2753297536/" class="leancloud_visitors" data-flag-title="OSPF（基础）">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/posts/2753297536/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                        
+                            <span class="category-color">数通</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">ospf</span>
+                        
+                    
+                </div>
             
         </div>
     </div>
     
-        <a class="scroll-down" href="javascript:;" target="_self" data-offset="-45">
-            <i class="scroll-down-icon iconfont icon-return"></i>
-        </a>
-    
 </div>
 <div id="container">
     
-        
-            <!-- 首页 -->
-            <div class="articles">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="ospf开发式最短路径优先（基础篇）"><a href="#ospf开发式最短路径优先（基础篇）" class="headerlink" title="ospf开发式最短路径优先（基础篇）"></a>ospf开发式最短路径优先（基础篇）</h1><h2 id="什么是ospf"><a href="#什么是ospf" class="headerlink" title="什么是ospf"></a>什么是ospf</h2><p>OSPF (Open Shortest Path First) 是一种内部网关协议（IGP），用于在自治系统（AS）内部的路由器之间交换路由信息，以便确定最佳路径。它是一种开放标准的链路状态路由协议，旨在支持大型、复杂的网络环境</p>
+<h2 id="ospf原理"><a href="#ospf原理" class="headerlink" title="ospf原理"></a>ospf原理</h2><p>ospf收敛过程，首先由LSA泛红，收到LSA的路由器根据LSA中包含的信息（ip,掩码,cost,网络类型）建立自己的LSDB，在LSDB的基础上利用spf算法进行计算，建立起到达每个网络的最短路径，最后通过最短路径得出到达网络的最优路由，并将其加入到IP路由表中。</p>
+<h2 id="ospf报文（5种）"><a href="#ospf报文（5种）" class="headerlink" title="ospf报文（5种）"></a>ospf报文（5种）</h2><p><img src="/../image/OSPFbasimg/2.png"></p>
+<h3 id="hello-报文"><a href="#hello-报文" class="headerlink" title="hello 报文"></a>hello 报文</h3><ul>
+<li><p>发现，维护邻居关系，在广播和NBMA网络中选举DR和BDR</p>
+<ul>
+<li><pre><code> ospf使用Hello报文发现和建立邻居关系
+</code></pre>
+</li>
+<li><pre><code> 在以太网链路上，缺省时，OSPF采用组播的形式发送Hello报文（目的地址224.0.0.5）
+</code></pre>
+</li>
+<li><pre><code> OSPF Hello报文中包含了路由器的Router ID、邻居列表等信息
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/../image/OSPFbasimg/1.png"></p>
+<h3 id="DD-报文"><a href="#DD-报文" class="headerlink" title="DD   报文"></a>DD   报文</h3><ul>
+<li><p>两台路由器进行LSDB数据库同步时，用DD报文来描述自己的LSDB</p>
+<ul>
+<li><p>R1和R2的Router ID分别为10.0.1.1和10.0.2.2并且二者已建立了邻居关系。当R1的邻居状态变为ExStart后，R1会发送第一个DD报文。此报文中，M-bit设置为1，表示后续还有DD报文要发送，MS-bit设置为1，表示R1宣告自己为Master。DD序列号被随机设置为X，I-bit设置为1，表示这是第一个DD报文。</p>
+</li>
+<li><p>同样当R2的邻居状态变为ExStart后，R2也会发送第一个DD报文。此报文中，DD序列号被随机设置为Y（I-bit&#x3D;1，M-bit&#x3D;1，MS-bit&#x3D;1，含义同上）。由于R2的Router ID较大，所以R2将成为真正的Master。收到此报文后，R1会产生一个Negotiation-Done事件，并将邻居状态从ExStart变为Exchange。</p>
+</li>
+<li><p>当R1的邻居状态变为Exchange后，R1会发送一个新的DD报文，此报文中包含了LSDB的摘要信息，序列号设置为R2在步骤2中使用的序列号Y，I-bit&#x3D;0，表示这不是第一个DD报文，M-bit&#x3D;0，表示这是最后一个包含LSDB摘要信息的DD报文，MS-bit&#x3D;0，表示R1宣告自己为Slave。收到此报文后，R2将邻居状态从ExStart变为Exchange。<br>当R2的邻居状态变为Exchange后，R2会发送一个新的DD报文，此报文包含了LSDB的摘要信息。DD序列号设置为Y+1, MS-bit&#x3D;1，表示R2宣告自己为Master。</p>
+</li>
+<li><p>虽然R1不需要发送新的包含LSDB摘要信息的DD报文，但是作为Slave，R1需要对Master发送的每一个DD报文进行确认。所以，R1向R2发送一个新的DD报文，序列号为Y+1，该报文内容为空。发送完此报文后，R1产生一个Exchange-Done事件，将邻居状态变为Loading。R2收到此报文后，会将邻居状态变为Full（假设R2的LSDB是最新最全的，不需要向R1请求更新）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>​	<strong>- 注意：</strong></p>
+<p>​		Interface MTU：接口的最大传输单元，华为默认不开启检测，仅当双方接口都开了MTU检测		的时候，该字段才会生效。</p>
+<p>​		<strong>双方的MTU值设置不一致的时候，且开启检测，会出现以下情况：</strong></p>
+<p>​		如果主动端的MTU值更大，那么主动端发送的报文无法被被动端识别到，被动端将停留在Exstart状态，而主动端因为得不到被动端的确认报文，也停留在Exstart状态。<br>如果被动端的MTU值跟大，主动端的发送的报文被动端能够识别，被动端确定了主从之后，发送报文给主动端，自己将邻居状态标记为Exchange状态，但是主动端无法识别被动端的报文，5s后将重传DD报文，而始终维持在Exstart状态。<br>总结：主动端的MTU值更大的时候，两端处于Exstart状态，被动端更大，主动端处于Exstart状态，被动端的邻居处于Exchange状态。启动命令ospf mtu-enable，双方开启检测才会生效。</p>
+<h3 id="LSR-报文"><a href="#LSR-报文" class="headerlink" title="LSR 报文"></a>LSR 报文</h3><ul>
+<li>两台路由器通过DD报文后，知道对端路由器中哪些LSA是本地LSDB所缺少的，就会发送LSR向对方请求缺少的LSA</li>
+</ul>
+<h3 id="LSU-报文"><a href="#LSU-报文" class="headerlink" title="LSU 报文"></a>LSU 报文</h3><ul>
+<li>用来向对端路由器发送所需要的LSA</li>
+</ul>
+<h3 id="LSACK-报文"><a href="#LSACK-报文" class="headerlink" title="LSACK 报文"></a>LSACK 报文</h3><ul>
+<li>对接受到的LSU进行确认</li>
+</ul>
+<h2 id="RouterID选举"><a href="#RouterID选举" class="headerlink" title="RouterID选举"></a>RouterID选举</h2><p>手动配置</p>
+<p>使用Loopback接口中最大的ip地址作为Router ID</p>
+<p>路由器使用物理接口中最大的IP地址作为Router ID</p>
+<h2 id="区域"><a href="#区域" class="headerlink" title="区域"></a>区域</h2><p>Area用于标识一个OSPF的区域，逻辑上将设备划分为不同的组，每个组用AreaID来标识</p>
+<h2 id="度量值"><a href="#度量值" class="headerlink" title="度量值"></a>度量值</h2><p>ospf使用cost作为路由的度量值，缺省参考值为（100Mbit&#x2F;s）&#x2F;接口带宽</p>
+<h2 id="三大表项"><a href="#三大表项" class="headerlink" title="三大表项"></a>三大表项</h2><h3 id="OSPF邻居表"><a href="#OSPF邻居表" class="headerlink" title="OSPF邻居表"></a>OSPF邻居表</h3><ul>
+<li>通过hello报文建立邻居关系，查看邻居状态：display ospf peer</li>
+</ul>
+<h3 id="LSDB"><a href="#LSDB" class="headerlink" title="LSDB"></a>LSDB</h3><ul>
+<li>保存自己产生的以及邻居收到的LSA信息，查看命令：display ospf lsdb</li>
+</ul>
+<h3 id="OSPF路由表"><a href="#OSPF路由表" class="headerlink" title="OSPF路由表"></a>OSPF路由表</h3><ul>
+<li>OSPF路由表包括Destination、cost、NextHop等指导转发信息，查询命令：display ospf routing</li>
+</ul>
+
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/posts/2753297536/">OSPF（基础）</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2024-03-06
-                            </span>
-                            
-                                
-                                    <span id="/posts/2753297536/" class="leancloud_visitors" data-flag-title="OSPF（基础）">
-                                        <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                    </span>
-                                
-                                
-                                    <span>
-                                        <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/posts/2753297536/"></span>
-                                    </span>
-                                
-                            
-                        </div>
-                        <div class="clear"></div>     
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="大海">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>大海
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/posts/2753297536/" target="_blank">OSPF（基础）</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>简单地活着, 肆意又精彩.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/%E6%95%B0%E9%80%9A/">数通</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/posts/1243066710/">Hello World</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2024-03-04
-                            </span>
-                            
-                                
-                                    <span id="/posts/1243066710/" class="leancloud_visitors" data-flag-title="Hello World">
-                                        <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                    </span>
-                                
-                                
-                                    <span>
-                                        <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/posts/1243066710/"></span>
-                                    </span>
-                                
-                            
-                        </div>
-                        <div class="clear"></div>     
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/ospf/">ospf</a>
+                        
                     </div>
                 
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/posts/1243066710/" class="next-prefix">» </a> 下一篇：    <a href="/posts/1243066710/" title="发布于 2024-03-04 03:29">Hello World</a>
+                    
+                </div>
             </div>
             
-            
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
@@ -149,7 +227,7 @@
             <div class="menu-list">
                 <ul>
                     
-                        <li class=" active "><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
