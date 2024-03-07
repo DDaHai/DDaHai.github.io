@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签 - ospf
+            OSPF(进阶)
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,40 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签归档</h1>
+                <h1 class="header-subtitle">OSPF(进阶)</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2024-03-07
+                        </span>
+                        
+                            
+                                <span id="/posts/858716564/" class="leancloud_visitors" data-flag-title="OSPF(进阶)">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/posts/858716564/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                        
+                            <span class="category-color">数通</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">ospf</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,47 +74,218 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="OSPF-进阶"><a href="#OSPF-进阶" class="headerlink" title="OSPF(进阶)"></a>OSPF(进阶)</h1><h2 id="DR与BDR作用"><a href="#DR与BDR作用" class="headerlink" title="DR与BDR作用"></a>DR与BDR作用</h2><ul>
+<li><p>DR：负责在MA网络建立和维护邻接关系，并负责LSA的同步交换链路状态信息。</p>
+</li>
+<li><p>BDR：防止单点故障</p>
+</li>
+</ul>
+<h2 id="DR与BDR的选举"><a href="#DR与BDR的选举" class="headerlink" title="DR与BDR的选举"></a>DR与BDR的选举</h2><ul>
+<li><p>非抢占式</p>
+</li>
+<li><p>基于接口选举：</p>
+</li>
+</ul>
+<p>​			1. DR优先级越大越优先</p>
+<p>​			2. 接口相同，Router ID越大越优先</p>
+<p><strong>注意：</strong></p>
+<pre><code> 1. 优先级为0不参与选举
+ 2. 新增路由器不能直接成为DR或BDR
+</code></pre>
+<h2 id="LSA的基本概念"><a href="#LSA的基本概念" class="headerlink" title="LSA的基本概念"></a>LSA的基本概念</h2><ul>
+<li><p><img src="/../image/OSPFJEimg/1.png"></p>
+</li>
+<li><p>LSA是OSPF进行路由计算的关键依据。</p>
+</li>
+<li><p>OSPF的LSU报文可以携带多种不同类型的LSA。</p>
+</li>
+<li><p>各种类型的LSA拥有相同的报文头部</p>
+</li>
+</ul>
+<h2 id="6类LSA"><a href="#6类LSA" class="headerlink" title="6类LSA"></a>6类LSA</h2><h3 id="路由器LSA"><a href="#路由器LSA" class="headerlink" title="路由器LSA"></a>路由器LSA</h3><p>LSA1（router）</p>
+<ul>
+<li><p>每个路由器都必须会产生LSA1</p>
+</li>
+<li><p>传播范围是本区域内</p>
+</li>
+<li><p>包含本路由所有直连网段的列表信息，IP地址前缀和掩码，cost，ospf网络类型（点对点，点对多点，广播，非广播，点对多点非广播）</p>
+</li>
+<li><p>loopback叫做stub network, 普通物理接口网段叫做：transit network</p>
+</li>
+</ul>
+<h3 id="网络LSA"><a href="#网络LSA" class="headerlink" title="网络LSA"></a>网络LSA</h3><p>LSA2（network）</p>
+<ul>
+<li><p>只有广播网或者NBMA网络的DR会产生LSA2(NBMA手动选举DR)</p>
+</li>
+<li><p>传播范围是本area内</p>
+</li>
+<li><p>LSA1和2都只能在一个区域内部传递，不能穿越ABR</p>
+</li>
+</ul>
+<h3 id="网络汇总LSA"><a href="#网络汇总LSA" class="headerlink" title="网络汇总LSA"></a>网络汇总LSA</h3><p>LSA3（network Summary）</p>
+<ul>
+<li><p>始发区域的ABR生产，域间路由类型O IA</p>
+</li>
+<li><p>传播范围是整个AS，但是每穿越一个区域，吓一跳都要修改为这个区域的ABR router-id</p>
+</li>
+<li><p>包含本区域内全部ospf成员路由器的直连网段，cost,ip前缀和掩码，ospf网络类型</p>
+</li>
+<li><p>默认LSA3是不汇总的，本区域有多少条路由，就会生成多少条LSA3宣告给其他区域。</p>
+</li>
+</ul>
+<h3 id="ASBR汇总LSA"><a href="#ASBR汇总LSA" class="headerlink" title="ASBR汇总LSA"></a>ASBR汇总LSA</h3><p>LSA4 (ASBR Summary)</p>
+<ul>
+<li><p>始发区域的ABR生产，域间路由类型O IA</p>
+</li>
+<li><p>传播范围是整个AS，但是每穿越一个区域，吓一跳都要修改为这个区域的ABR router-id</p>
+</li>
+<li><p>LSA4只包含了router-id，作用是告知ospf区域其他路由器ASBR的位置</p>
+</li>
+<li><p>LSA4 有几个ASBR，就有几条LSA4的信息</p>
+</li>
+</ul>
+<h3 id="AS外部LSA"><a href="#AS外部LSA" class="headerlink" title="AS外部LSA"></a>AS外部LSA</h3><p>LSA5 （AS External LSA）</p>
+<ul>
+<li><p>有4就有5</p>
+</li>
+<li><p>始发ASBR router-id自己产生，可以在整个AS内传播</p>
+</li>
+<li><p>在AS内宣告，吓一跳永远不变（ASBR router-id）（谁产生的，吓一跳就是谁）</p>
+</li>
+<li><p>LSA5的作用是用来把外部路由宣告给ospf内部</p>
+</li>
+<li><p>默认不汇总，有多少个外部路由网段，就有多少条LSA5</p>
+</li>
+</ul>
+<h3 id="非完全末梢区域LSA"><a href="#非完全末梢区域LSA" class="headerlink" title="非完全末梢区域LSA"></a>非完全末梢区域LSA</h3><p>LSA7（NSSA LSA）</p>
+<ul>
+<li><p>NSSA叫做：非纯末梢区域</p>
+</li>
+<li><p>NSSA的定义是，必须是骨干区域，而且具有ASBR出口的区域，叫做NSSA</p>
+</li>
+<li><p>LSA7和LSA5格式相同</p>
+</li>
+<li><p>区别是:LSA7是 NSSA 区域发出的外部路由，LSA5 是 area0 区域发出的外部路由（配置LSA7应先定义NSSA）</p>
+<ul>
+<li>注：</li>
+</ul>
+</li>
+</ul>
+<p>因为非骨干区域的ASBR所发出LSA5的和骨干区域ABSR发出的LSA5相同，无法分辨是哪个类型的外部路由发出来的，为了做区分，将除0之外的外部路由通称7</p>
+<ul>
+<li><p>由 NSSA 区域的始发 ASBR 产生,<br>随后由 NSSA 区域的ABR将LSA7转换成LSA5 发给area 0，7转5是自动转换</p>
+</li>
+<li><p>下一跳要改变成NSSA ABR的router-id</p>
+</li>
+<li><p>LSA7 的传播范围只能在 NSSA 区域内传递</p>
+</li>
+</ul>
+<h2 id="spf算法"><a href="#spf算法" class="headerlink" title="spf算法"></a>spf算法</h2><p>略</p>
+<h2 id="传输区域和末端区域"><a href="#传输区域和末端区域" class="headerlink" title="传输区域和末端区域"></a>传输区域和末端区域</h2><h3 id="提出问题："><a href="#提出问题：" class="headerlink" title="提出问题："></a>提出问题：</h3><p>网络规模变大会导致LSDB规模增大，设备路由器计算计算变得更加吃力，造成浪费</p>
+<p>为了在不影响ip可达的情况下，怎么减少LSA的数量</p>
+<p><img src="/../image/OSPFJEimg/2.png"></p>
+<p>传输区域（Transit Area）：除了承载本区域发起的流量和访问本区域的流量外，还承载了源IP和目的IP都不属于本区域的流量，即“穿越型流量”，如本例中的Area 0。</p>
+<p>末端区域（Stub Area）：只承载本区域发起的流量和访问本区域的流量，如本例中的Area 1和Area 2。</p>
+<h2 id="OSPF特殊区域"><a href="#OSPF特殊区域" class="headerlink" title="OSPF特殊区域"></a>OSPF特殊区域</h2><h3 id="stub-末梢区域"><a href="#stub-末梢区域" class="headerlink" title="stub(末梢区域)"></a>stub(末梢区域)</h3><ul>
+<li><p><img src="/../image/OSPFJEimg/3.png"></p>
+</li>
+<li><p>stub区域的ABR不向Stub区域内传播它接收到的AS外部路由，Stub区域中路由器的LSDB、路由表规模都会大大减小。</p>
+</li>
+<li><p>为保证Stub区域能够达到AS外部，Stub区域的ABR将生成一条缺省路由（使用3类LSA描述）</p>
+</li>
+<li><p>配置Stub区域时需要注意下列几点:</p>
+<ul>
+<li><p>骨干区域不能被配置为Stub区域。</p>
+</li>
+<li><p>Stub区域中的所有路由器都必须将该区域配置为Stub。</p>
+</li>
+<li><p>Stub区域内不能引入也不接收AS外部路由。</p>
+</li>
+<li><p>虚连接不能穿越stub区域</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="totally-stub（完全末梢区域）"><a href="#totally-stub（完全末梢区域）" class="headerlink" title="totally stub（完全末梢区域）"></a>totally stub（完全末梢区域）</h3><ul>
+<li><p> <img src="/../image/OSPFJEimg/4.png"></p>
+</li>
+<li><p>Totallystub区域既不允许AS外部路由在本区域内传播，也不允许区域间路由在本区域内传播</p>
+</li>
+<li><p>Totallystub区域内的路由器通过本区域ABR下发的缺省路由(使用3类LSA描述)到达其他区域，以及AS外部.</p>
+</li>
+<li><p>配置TotallyStub区域时需要注意:</p>
+</li>
+</ul>
+<p>与Stub区域配置的区别在于，在ABR上需要追加no-summary关键字</p>
+<h3 id="NSSA（非纯末梢区域）"><a href="#NSSA（非纯末梢区域）" class="headerlink" title="NSSA（非纯末梢区域）"></a>NSSA（非纯末梢区域）</h3><p><img src="/../image/OSPFJEimg/5.png"></p>
+<ul>
+<li>NSSA区域能够引入外部路由，同时又不会学习来自OSPF网络其它区域引入的外部路由</li>
+</ul>
+<h3 id="Totally-NSSA-完全非纯末梢区域"><a href="#Totally-NSSA-完全非纯末梢区域" class="headerlink" title="Totally NSSA(完全非纯末梢区域)"></a>Totally NSSA(完全非纯末梢区域)</h3><ul>
+<li>Totally NSSA与NSSA区域的配置区别在于前者在ABR上需要追加no-summary关键字</li>
+</ul>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="大海">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>大海
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/posts/858716564/" target="_blank">OSPF(进阶)</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>简单地活着, 肆意又精彩.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            当前标签：<span class="tag">ospf</span>
+                            <a href="/category/%E6%95%B0%E9%80%9A/">数通</a>
                         
-                    </span>
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/ospf/">ospf</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
                     
                     
-                        
-                            <div class="archive-title">
-                                <h2 class="archive-year">2024</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/posts/858716564/"><span>OSPF(进阶)</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">03-07</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/posts/2753297536/"><span>OSPF（基础）</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">03-06</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/posts/2753297536/" class="next-prefix">» </a> 下一篇：    <a href="/posts/2753297536/" title="发布于 2024-03-06 04:13">OSPF（基础）</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
