@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            分类
+            ACL
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,40 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/page.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">分类</h1>
+                <h1 class="header-subtitle">ACL</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2024-03-08
+                        </span>
+                        
+                            
+                                <span id="/posts/707211160/" class="leancloud_visitors" data-flag-title="ACL">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/posts/707211160/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                        
+                            <span class="category-color">数通</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">ACL</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,17 +74,135 @@
 </div>
 <div id="container">
     
-        <!-- 独立页面 -->
-        
-            <div class="categories">
-                <div class="categories-title">
-                    目前共计 1 个分类
-                </div>
-                <div class="categories-content">
-                    <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/category/%E6%95%B0%E9%80%9A/">数通</a><span class="category-list-count">3</span></li></ul>
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="ACL"><a href="#ACL" class="headerlink" title="ACL"></a>ACL</h1><h2 id="1-什么是ACL"><a href="#1-什么是ACL" class="headerlink" title="1.什么是ACL"></a>1.什么是ACL</h2><p>​	控制访问列表，是路由器和交换机接口的指令列表，用来控制端口进出的数据包。</p>
+<h2 id="2-工作原理"><a href="#2-工作原理" class="headerlink" title="2.工作原理"></a>2.工作原理</h2><p>入站ACL:  对到来的分组进行处理后在路由到主站接口，<strong>效率高</strong>。</p>
+<p>出站ACL:  将分组路由到出站接口，然后根据ACL对其进行处理。</p>
+<p>ACL顺序︰ 从上到下、每次一条语句。</p>
+<h2 id="3-ACL分类"><a href="#3-ACL分类" class="headerlink" title="3.ACL分类"></a>3.ACL分类</h2><p>​      ACL根据编号可以分为一下几类：</p>
+<p>​		 基本ACL：编号范围2000-2999，可以通过匹配源IP进行过滤。</p>
+<p>​        高级ACL：编号范围3000-3999，可以通过匹配源目IP、源目端口、协议等进行匹配。</p>
+<p>​		 二层ACL：编号范围4000-4999，可以通过匹配源目MAC等进行匹配。</p>
+<p>​        用户自定义ACL：编号范围5000-5999</p>
+<p>​        用户ACL：编号范围6000-6999			</p>
+<h2 id="4-功能："><a href="#4-功能：" class="headerlink" title="4.功能："></a>4.功能：</h2><p>1、流量过滤：有限的互访。</p>
+<p>ACL由一系列的permit（允许）或deny（拒绝）语句组成的、有序（顺序）规则列表。</p>
+<p>ACL是一个匹配工具，能够对报文进行匹配和区分。</p>
+<p>华为隐藏默认规则是premit。（思科是deny）</p>
+<p><strong>基础acl</strong></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[R1]acl 2000</td>
+<td>创建ACL2000条目</td>
+</tr>
+<tr>
+<td>[R1-acl-basic-2000]rule 5 deny source 1.1.1.0 0.0.0.255</td>
+<td>拒绝放行源IP网段为1.1.1.0的报文</td>
+</tr>
+<tr>
+<td>[R1-GigabitEthernet0&#x2F;0&#x2F;0]traffic-filter inbound acl 2000</td>
+<td>接口启用ACL规则</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>5：编号，默认步长为5，ACL在进行匹配的时候，是根据编号的顺序，从小到大一条条往下进行的，一旦由匹配到的规则，则不会继续向下匹配，如果匹配到最后都没有，则命中默认规则，默认是deny所有</p>
+</li>
+<li><p>inbound：指定在接口入方向上配置报文过滤</p>
+</li>
+<li><p>outbound：指定在接口出方向上配置报文过滤</p>
+</li>
+<li><p>acl：指定基于IPV4 ACL对报文进行过滤</p>
+</li>
+</ul>
+<p><strong>高级acl</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[R1]acl 3001</td>
+<td>创建ACL3001条目</td>
+</tr>
+<tr>
+<td>[R1-acl-basic-3001]rule 5 deny source 1.1.1.0 0.0.0.255 destination 2.2.2.0 0.0.0.255</td>
+<td>拒绝放放行原ip网段1.1.1.0网段报文到2.2.2.0网段</td>
+</tr>
+<tr>
+<td>[R1-GigabitEthernet0&#x2F;0&#x2F;0]traffic-filter inbound acl 3001</td>
+<td>接口启用ACL规则</td>
+</tr>
+</tbody></table>
+<p>​            </p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="大海">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>大海
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/posts/707211160/" target="_blank">ACL</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>简单地活着, 肆意又精彩.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/%E6%95%B0%E9%80%9A/">数通</a>
+                        
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/ACL/">ACL</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/posts/858716564/" class="next-prefix">» </a> 下一篇：    <a href="/posts/858716564/" title="发布于 2024-03-07 02:08">OSPF(进阶)</a>
+                    
                 </div>
             </div>
+            
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
@@ -93,7 +236,7 @@
                     
                         <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
                     
-                        <li class=" active "><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
+                        <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
